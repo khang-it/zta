@@ -27,7 +27,9 @@ Dự án này được tạo bằng công cụ `npx express-generator` với c�
 ├── package.json        # Quản lý gói và cấu hình | 패키지 및 설정 관리
 └── README.md           # Tệp hướng dẫn này | 이 설명서 파일
 
-**## 3. Hướng dẫn cài đặt | 설치 방법**
+```
+
+## 3. Hướng dẫn cài đặt | 설치 방법**
 Yêu cầu hệ thống | 시스템 요구 사항
 Node.js: Phiên bản 14.x hoặc mới hơn | 14.x 버전 이상
 npm: Được cài đặt sẵn cùng Node.js | Node.js에 포함된 npm
@@ -53,7 +55,7 @@ Truy cập ứng dụng tại | 애플리케이션에 접근:
 arduino
 Sao chép mã
 http://localhost:3000
-# ## 4. Tính năng chính | 주요 기능
+## 4. Tính năng chính | 주요 기능
 Sử dụng Handlebars làm công cụ template | Handlebars 템플릿 엔진 사용
 Tích hợp tài nguyên tĩnh từ thư mục public | public 디렉토리에서 정적 자원 통합
 Quản lý route rõ ràng trong thư mục routes | routes 디렉토리에서 명확한 라우트 관리
