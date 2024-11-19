@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="/javascripts/dragable.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+</head>
+
+<body>
+    <div class="board flex gap-4 p-4">
+        <!-- Cột 1 -->
+        <div class="column bg-gray-100 border border-gray-300 rounded-md p-2 w-1/4">
+            <h3 class="text-lg font-semibold mb-2">To Do</h3>
+            <div class="card bg-white p-2 mb-2 border border-gray-300 rounded-md cursor-grab" draggable="true">Task 1
+            </div>
+            <div class="card bg-white p-2 mb-2 border border-gray-300 rounded-md cursor-grab" draggable="true">Task 2
+            </div>
+        </div>
+
+        <!-- Cột 2 -->
+        <div class="column bg-gray-100 border border-gray-300 rounded-md p-2 w-1/4">
+            <h3 class="text-lg font-semibold mb-2">In Progress</h3>
+            <div class="card bg-white p-2 mb-2 border border-gray-300 rounded-md cursor-grab" draggable="true">Task 3
+            </div>
+        </div>
+
+        <!-- Cột 3 -->
+        <div class="column bg-gray-100 border border-gray-300 rounded-md p-2 w-1/4">
+            <h3 class="text-lg font-semibold mb-2">Done</h3>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const columns = document.querySelectorAll(".column");
+
+            columns.forEach((column) => {
+                new Sortable(column, {
+                    group: "shared", // Cho phép kéo giữa các cột
+                    animation: 150, // Hiệu ứng
+                });
+            });
+        });
+
+    </script>
+</body>
+
+</html>

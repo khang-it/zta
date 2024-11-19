@@ -1,0 +1,55 @@
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <div class="sidebar bg-gray-100 w-1/4 border-r">
+        <div>User1</div>
+        <div>User1</div>
+        <div>User1</div>
+    </div>
+
+    <!-- Splitter -->
+    <div class="splitter w-1 bg-gray-400 cursor-col-resize" data-splitter-id="1"></div>
+
+    <!-- Main Content -->
+    <div class="main-content flex-1 bg-white">
+
+        <div class="table border border-gray-300">
+            <div class="row flex">
+                <div class="cell flex-1 border-r border-gray-300 p-2">Cột 1</div>
+                <div class="splitter-table w-1 bg-gray-400 cursor-col-resize"></div>
+                <div class="cell flex-1 border-r border-gray-300 p-2">Cột 2</div>
+                <div class="splitter-table w-1 bg-gray-400 cursor-col-resize"></div>
+                <div class="cell flex-1 p-2">Cột 3</div>
+            </div>
+            <div class="row flex">
+                <div class="cell flex-1 border-r border-gray-300 p-2">Dữ liệu 1</div>
+                <div class="splitter-table w-1 bg-gray-400 cursor-col-resize"></div>
+                <div class="cell flex-1 border-r border-gray-300 p-2">Dữ liệu 2</div>
+                <div class="splitter-table w-1 bg-gray-400 cursor-col-resize"></div>
+                <div class="cell flex-1 p-2">Dữ liệu 3</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="/javascripts/splitter2.js"></script>
+<script src="/javascripts/splitter-table.js"></script>
+
+<style>
+    .table {
+        display: block;
+        width: 100%;
+    }
+
+    .row {
+        display: flex;
+        width: 100%;
+    }
+
+    .cell {
+        display: block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+</style>

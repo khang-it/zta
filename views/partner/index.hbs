@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container mx-auto p-8">
+        <h2 class="text-2xl font-bold mb-4">Thông tin khách hàng</h2>
+        <form id="partnerForm" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="name">Họ và Tên</label>
+                <input id="name" name="name" type="text" placeholder="Nhập tên"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email</label>
+                <input id="email" name="email" type="email" placeholder="Nhập email"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="phone">Số điện thoại</label>
+                <input id="phone" name="phone" type="text" placeholder="Nhập số điện thoại"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="address">Địa chỉ</label>
+                <textarea id="address" name="address" rows="3" placeholder="Nhập địa chỉ"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+            </div>
+            <div class="flex items-center justify-between">
+                <button id="saveBtn" type="button"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Lưu
+                </button>
+            </div>
+        </form>
+
+        <h2 class="text-2xl font-bold mb-4">Danh sách khách hàng</h2>
+        <div id="partnerList" class="bg-white shadow-md rounded px-8 pt-6 pb-8"></div>
+    </div>
+
+    <script>
+        document.getElementById("saveBtn").addEventListener("click", async () => {
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const phone = document.getElementById("phone").value;
+            const address = document.getElementById("address").value;
+
+            if (!name || !email) {
+                alert("Vui lòng nhập đầy đủ họ tên và email!");
+                return;
+            }
+
+            try {
+                // Gửi dữ liệu đến server
+                await fetch("/partner/add", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ name, email, phone, address }),
+                });
+                alert("Lưu thành công!");
+                fetchPartners(); // Cập nhật danh sách
+            } catch (error) {
+                console.error(error);
+                alert("Lưu thất bại!");
+            }
+        });
+
+        // Lấy danh sách đối tác
+        async function fetchPartners() {
+            try {
+                const response = await fetch("/partner/list");
+                const partners = await response.json();
+
+                const partnerList = document.getElementById("partnerList");
+                partnerList.innerHTML = `
+      <table class="table-auto w-full border-collapse border border-gray-300">
+        <thead>
+          <tr class="bg-gray-200">
+            <th class="border border-gray-300 px-4 py-2">ID</th>
+            <th class="border border-gray-300 px-4 py-2">Họ và Tên</th>
+            <th class="border border-gray-300 px-4 py-2">Email</th>
+            <th class="border border-gray-300 px-4 py-2">Số điện thoại</th>
+            <th class="border border-gray-300 px-4 py-2">Địa chỉ</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${partners
+                        .map(
+                            (partner) => `
+            <tr>
+              <td class="border border-gray-300 px-4 py-2">${partner.id}</td>
+              <td class="border border-gray-300 px-4 py-2">${partner.name}</td>
+              <td class="border border-gray-300 px-4 py-2">${partner.email}</td>
+              <td class="border border-gray-300 px-4 py-2">${partner.phone || ""}</td>
+              <td class="border border-gray-300 px-4 py-2">${partner.address || ""}</td>
+            </tr>
+          `
+                        )
+                        .join("")}
+        </tbody>
+      </table>
+    `;
+            } catch (error) {
+                console.error(error);
+                alert("Lỗi khi tải danh sách!");
+            }
+        }
+
+        // Lấy danh sách ngay khi load trang
+        fetchPartners();
+
+    </script>
+
+</body>
+
+</html>

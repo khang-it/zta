@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #camera-popup {
+            z-index: 1000;
+        }
+
+        #camera-popup.dragging {
+            opacity: 0.8;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="camera-popup" class="fixed top-10 left-10 w-80 bg-white shadow-lg border rounded-lg hidden">
+        <div class="popup-header flex justify-between items-center bg-gray-200 p-2 cursor-move">
+            <h2 class="text-sm font-bold">Camera View</h2>
+            <button id="close-popup" class="text-red-500 font-bold">✕</button>
+        </div>
+        <div class="popup-content p-2">
+            <video id="camera-view" autoplay playsinline class="w-full h-48 bg-black"></video>
+            <div class="controls mt-4 flex justify-between">
+                <button id="capture-photo" class="bg-blue-500 text-white px-4 py-1 rounded">Chụp ảnh</button>
+                <button id="start-recording" class="bg-green-500 text-white px-4 py-1 rounded">Quay phim</button>
+                <button id="stop-recording" class="bg-red-500 text-white px-4 py-1 rounded hidden">Dừng</button>
+            </div>
+        </div>
+    </div>
+    <button id="open-popup" class="bg-blue-500 text-white px-4 py-2 fixed bottom-10 left-10 rounded">Mở Camera</button>
+
+    <script>
+        // Init camera
+        document.addEventListener("DOMContentLoaded", () => {
+            const openPopupButton = document.getElementById("open-popup");
+            const closePopupButton = document.getElementById("close-popup");
+            const popup = document.getElementById("camera-popup");
+            const cameraView = document.getElementById("camera-view");
+            const captureButton = document.getElementById("capture-photo");
+            const startRecordingButton = document.getElementById("start-recording");
+            const stopRecordingButton = document.getElementById("stop-recording");
+
+            let mediaStream = null;
+            let mediaRecorder = null;
+            let chunks = [];
+
+            // Open Popup and Start Camera
+            openPopupButton.addEventListener("click", async () => {
+                popup.style.display = "block";
+
+                try {
+                    mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    cameraView.srcObject = mediaStream;
+                } catch (error) {
+                    console.error("Cannot access camera:", error);
+                }
+            });
+
+            // Close Popup and Stop Camera
+            closePopupButton.addEventListener("click", () => {
+                popup.style.display = "none";
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach((track) => track.stop());
+                    mediaStream = null;
+                }
+            });
+
+            // Capture Photo
+            captureButton.addEventListener("click", () => {
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext("2d");
+                canvas.width = cameraView.videoWidth;
+                canvas.height = cameraView.videoHeight;
+                context.drawImage(cameraView, 0, 0, canvas.width, canvas.height);
+                const imageData = canvas.toDataURL("image/png");
+                const link = document.createElement("a");
+                link.href = imageData;
+                link.download = "photo.png";
+                link.click();
+            });
+
+            // Start Recording
+            startRecordingButton.addEventListener("click", () => {
+                if (!mediaStream) return;
+
+                mediaRecorder = new MediaRecorder(mediaStream);
+                chunks = [];
+                mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: "video/webm" });
+                    const videoURL = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.href = videoURL;
+                    link.download = "video.webm";
+                    link.click();
+                };
+
+                mediaRecorder.start();
+                startRecordingButton.classList.add("hidden");
+                stopRecordingButton.classList.remove("hidden");
+            });
+
+            // Stop Recording
+            stopRecordingButton.addEventListener("click", () => {
+                if (mediaRecorder) {
+                    mediaRecorder.stop();
+                    startRecordingButton.classList.remove("hidden");
+                    stopRecordingButton.classList.add("hidden");
+                }
+            });
+
+            // Drag Popup
+            const header = document.querySelector(".popup-header");
+            let isDragging = false;
+            let offsetX = 0, offsetY = 0;
+
+            header.addEventListener("mousedown", (e) => {
+                isDragging = true;
+                offsetX = e.clientX - popup.offsetLeft;
+                offsetY = e.clientY - popup.offsetTop;
+                popup.classList.add("dragging");
+            });
+
+            document.addEventListener("mousemove", (e) => {
+                if (!isDragging) return;
+                popup.style.left = `${e.clientX - offsetX}px`;
+                popup.style.top = `${e.clientY - offsetY}px`;
+            });
+
+            document.addEventListener("mouseup", () => {
+                isDragging = false;
+                popup.classList.remove("dragging");
+            });
+        });
+
+    </script>
+
+</body>
+
+</html>

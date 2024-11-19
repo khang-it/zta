@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera viewer</title>
+ <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .camera-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .controls {
+            margin-top: 10px;
+        }
+
+        .popup-content {
+            position: relative;
+        }
+
+        .popup-content .close {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+
+<body>
+    <button id="openPopup">Open Camera</button>
+
+    <div id="cameraPopup" class="popup hidden">
+        <div class="popup-content">
+            <div class="camera-container">
+                <video id="videoElement" autoplay playsinline></video>
+                <canvas id="canvas" style="display: none;"></canvas>
+            </div>
+            <div class="controls">
+                <button id="captureButton">Capture Photo</button>
+                <button id="startRecording">Start Recording</button>
+                <button id="stopRecording" style="display:none;">Stop Recording</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Get elements
+        const openPopupButton = document.getElementById("openPopup");
+        const cameraPopup = document.getElementById("cameraPopup");
+        const videoElement = document.getElementById("videoElement");
+        const captureButton = document.getElementById("captureButton");
+        const startRecordingButton = document.getElementById("startRecording");
+        const stopRecordingButton = document.getElementById("stopRecording");
+
+        // Open popup
+        openPopupButton.addEventListener("click", () => {
+            cameraPopup.classList.remove("hidden");
+            startCamera();
+        });
+
+        // Start camera
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoElement.srcObject = stream;
+            } catch (error) {
+                console.error("Error accessing the camera: ", error);
+            }
+        }
+
+        // Close popup when clicked outside
+        cameraPopup.addEventListener("click", (e) => {
+            if (e.target === cameraPopup) {
+                cameraPopup.classList.add("hidden");
+                stopCamera();
+            }
+        });
+
+        // Stop camera
+        function stopCamera() {
+            const stream = videoElement.srcObject;
+            const tracks = stream.getTracks();
+            tracks.forEach(track => track.stop());
+            videoElement.srcObject = null;
+        }
+
+        captureButton.addEventListener("click", () => {
+            const canvas = document.getElementById("canvas");
+            const context = canvas.getContext("2d");
+
+            // Set canvas size to video size
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+
+            // Draw the current frame from the video onto the canvas
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+            // Convert canvas to image
+            const imageUrl = canvas.toDataURL("image/png");
+
+            // You can now save the image or show it on the page
+            console.log(imageUrl); // Image data URL
+
+            // Example: Display the image in a new image tag
+            const img = document.createElement("img");
+            img.src = imageUrl;
+            document.body.appendChild(img);
+        });
+
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        startRecordingButton.addEventListener("click", () => {
+            const stream = videoElement.srcObject;
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = event => {
+                recordedChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const videoBlob = new Blob(recordedChunks, { type: "video/webm" });
+                const videoUrl = URL.createObjectURL(videoBlob);
+                const videoElement = document.createElement("video");
+                videoElement.src = videoUrl;
+                videoElement.controls = true;
+                document.body.appendChild(videoElement);
+            };
+
+            mediaRecorder.start();
+            startRecordingButton.style.display = "none";
+            stopRecordingButton.style.display = "block";
+        });
+
+        stopRecordingButton.addEventListener("click", () => {
+            mediaRecorder.stop();
+            startRecordingButton.style.display = "block";
+            stopRecordingButton.style.display = "none";
+        });
+
+        // Di chuyển popup
+        let offsetX, offsetY, isDragging = false;
+
+        cameraPopup.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            offsetX = e.clientX - cameraPopup.getBoundingClientRect().left;
+            offsetY = e.clientY - cameraPopup.getBoundingClientRect().top;
+        });
+
+        document.addEventListener("mousemove", (e) => {
+            if (isDragging) {
+                cameraPopup.style.left = `${e.clientX - offsetX}px`;
+                cameraPopup.style.top = `${e.clientY - offsetY}px`;
+            }
+        });
+
+        document.addEventListener("mouseup", () => {
+            isDragging = false;
+        });
+
+
+    </script>
+
+</body>
+
+</html>

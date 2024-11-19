@@ -1,0 +1,26 @@
+{
+  "name": "zta",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "hbs": "~4.0.4",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1",
+    "pg": "^8.13.1",
+    "sequelize": "^6.37.5",
+    "sequelize-cli": "^6.6.2"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15"
+  }
+}
