@@ -27,7 +27,7 @@ Dự án này được tạo bằng công cụ `npx express-generator` với c�
 ├── package.json        # Quản lý gói và cấu hình | 패키지 및 설정 관리
 └── README.md           # Tệp hướng dẫn này | 이 설명서 파일
 
-## 3. Hướng dẫn cài đặt | 설치 방법
+**## 3. Hướng dẫn cài đặt | 설치 방법**
 Yêu cầu hệ thống | 시스템 요구 사항
 Node.js: Phiên bản 14.x hoặc mới hơn | 14.x 버전 이상
 npm: Được cài đặt sẵn cùng Node.js | Node.js에 포함된 npm
@@ -53,7 +53,7 @@ Truy cập ứng dụng tại | 애플리케이션에 접근:
 arduino
 Sao chép mã
 http://localhost:3000
-## 4. Tính năng chính | 주요 기능
+# ## 4. Tính năng chính | 주요 기능
 Sử dụng Handlebars làm công cụ template | Handlebars 템플릿 엔진 사용
 Tích hợp tài nguyên tĩnh từ thư mục public | public 디렉토리에서 정적 자원 통합
 Quản lý route rõ ràng trong thư mục routes | routes 디렉토리에서 명확한 라우트 관리
@@ -78,5 +78,19 @@ git branch -M main
 git remote add origin https://github.com/khang-it/zta.git
 git push -u origin main
 
+npx express-generator --view=hbs zta
+cd zta
+npm install
+
+npx sequelize-cli init
+
+createdb zta_dev
+
+npx sequelize-cli model:generate --name Product --attributes name:string,price:float,description:text
+
+npx sequelize-cli db:migrate
+
+
 ###
 touch .gitignore && echo "node_modules/" >> .gitignore && git rm -r --cached node_modules ; git status
+
